@@ -45,16 +45,41 @@ IncidentLight directLight;
 #if ( NUM_SPOT_LIGHTS > 0 ) && defined( RE_Direct )
 
 	SpotLight spotLight;
+	vec4 spotColor;
+	vec3 spotShadowCoord;
+	bool inSpotLightMap;
 
 	#pragma unroll_loop
-	for ( int i = 0; i < NUM_SPOT_LIGHTS; i ++ ) {
+	for ( int i = 0; i < NUM_SPOT_LIGHT_MAPS; i ++ ) {
+
+ 		spotLight = spotLights[ i ];
+
+ 		getSpotDirectLightIrradiance( spotLight, geometry, directLight );
+
+ 		spotShadowCoord = vSpotShadowCoord[ i ].xyz / vSpotShadowCoord[ i ].w;
+		inSpotLightMap = all( lessThan( abs( spotShadowCoord * 2. - 1. ), vec3( 1.0 ) ) );
+		spotColor = texture2D( spotMap[ i ], spotShadowCoord.xy );
+		inSpotLightMap = inSpotLightMap && ( spotColor.a > 0. );
+		directLight.visible = directLight.visible || inSpotLightMap;
+		directLight.color = inSpotLightMap ? mix( directLight.color, spotLight.color * spotColor.rgb, spotColor.a ) : directLight.color;
+
+ 		#ifdef USE_SHADOWMAP
+			directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
+		#endif
+
+ 		RE_Direct( directLight, geometry, material, reflectedLight );
+
+ 	}
+
+ 	#pragma unroll_loop
+	for ( int i = NUM_SPOT_LIGHT_MAPS; i < NUM_SPOT_LIGHTS; i ++ ) {
 
 		spotLight = spotLights[ i ];
 
 		getSpotDirectLightIrradiance( spotLight, geometry, directLight );
 
 		#ifdef USE_SHADOWMAP
-		directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
+			directLight.color *= all( bvec2( spotLight.shadow, directLight.visible ) ) ? getShadow( spotShadowMap[ i ], spotLight.shadowMapSize, spotLight.shadowBias, spotLight.shadowRadius, vSpotShadowCoord[ i ] ) : 1.0;
 		#endif
 
 		RE_Direct( directLight, geometry, material, reflectedLight );

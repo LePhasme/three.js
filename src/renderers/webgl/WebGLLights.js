@@ -115,6 +115,7 @@ function WebGLLights() {
 			directionalLength: - 1,
 			pointLength: - 1,
 			spotLength: - 1,
+			spotMapLength: - 1,
 			rectAreaLength: - 1,
 			hemiLength: - 1,
 			shadowsLength: - 1
@@ -125,6 +126,7 @@ function WebGLLights() {
 		directionalShadowMap: [],
 		directionalShadowMatrix: [],
 		spot: [],
+		spotMap: [],
 		spotShadowMap: [],
 		spotShadowMatrix: [],
 		rectArea: [],
@@ -146,6 +148,7 @@ function WebGLLights() {
 		var directionalLength = 0;
 		var pointLength = 0;
 		var spotLength = 0;
+		var spotMapLength = 0;
 		var rectAreaLength = 0;
 		var hemiLength = 0;
 
@@ -159,6 +162,7 @@ function WebGLLights() {
 			var intensity = light.intensity;
 			var distance = light.distance;
 
+			var map = light.map || null;
 			var shadowMap = ( light.shadow && light.shadow.map ) ? light.shadow.map.texture : null;
 
 			if ( light.isAmbientLight ) {
@@ -226,9 +230,21 @@ function WebGLLights() {
 
 				}
 
-				state.spotShadowMap[ spotLength ] = shadowMap;
-				state.spotShadowMatrix[ spotLength ] = light.shadow.matrix;
-				state.spot[ spotLength ] = uniforms;
+				if ( map ) {
+
+ 					state.spotShadowMap.splice( spotMapLength, 0, shadowMap );
+					state.spotShadowMatrix.splice( spotMapLength, 0, light.shadow.matrix );
+					state.spot.splice( spotMapLength, 0, uniforms );
+					state.spotMap[ spotMapLength ] = map;
+					spotMapLength ++;
+
+ 				} else {
+
+ 					state.spotShadowMap[ spotLength ] = shadowMap;
+					state.spotShadowMatrix[ spotLength ] = light.shadow.matrix;
+					state.spot[ spotLength ] = uniforms;
+
+ 				}
 
 				spotLength ++;
 
@@ -323,11 +339,15 @@ function WebGLLights() {
 		state.rectArea.length = rectAreaLength;
 		state.point.length = pointLength;
 		state.hemi.length = hemiLength;
+		state.spotMap.length = spotMapLength;
+		state.spotShadowMap.length = spotLength;
+		state.spotShadowMatrix.length = spotLength;
 
 		state.hash.stateID = state.id;
 		state.hash.directionalLength = directionalLength;
 		state.hash.pointLength = pointLength;
 		state.hash.spotLength = spotLength;
+		state.hash.spotMapLength = spotMapLength;
 		state.hash.rectAreaLength = rectAreaLength;
 		state.hash.hemiLength = hemiLength;
 		state.hash.shadowsLength = shadows.length;

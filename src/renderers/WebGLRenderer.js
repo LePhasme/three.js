@@ -1448,6 +1448,7 @@ function WebGLRenderer( parameters ) {
 			lightsHash.directionalLength !== lightsStateHash.directionalLength ||
 			lightsHash.pointLength !== lightsStateHash.pointLength ||
 			lightsHash.spotLength !== lightsStateHash.spotLength ||
+			lightsHash.spotMapLength !== lightsStateHash.spotMapLength ||
 			lightsHash.rectAreaLength !== lightsStateHash.rectAreaLength ||
 			lightsHash.hemiLength !== lightsStateHash.hemiLength ||
 			lightsHash.shadowsLength !== lightsStateHash.shadowsLength ) {
@@ -1456,6 +1457,7 @@ function WebGLRenderer( parameters ) {
 			lightsHash.directionalLength = lightsStateHash.directionalLength;
 			lightsHash.pointLength = lightsStateHash.pointLength;
 			lightsHash.spotLength = lightsStateHash.spotLength;
+			lightsHash.spotMapLength = lightsStateHash.spotMapLength;
 			lightsHash.rectAreaLength = lightsStateHash.rectAreaLength;
 			lightsHash.hemiLength = lightsStateHash.hemiLength;
 			lightsHash.shadowsLength = lightsStateHash.shadowsLength;
@@ -1569,6 +1571,7 @@ function WebGLRenderer( parameters ) {
 		lightsHash.directionalLength = lightsStateHash.directionalLength;
 		lightsHash.pointLength = lightsStateHash.pointLength;
 		lightsHash.spotLength = lightsStateHash.spotLength;
+		lightsHash.spotMapLength = lightsStateHash.spotMapLength;
 		lightsHash.rectAreaLength = lightsStateHash.rectAreaLength;
 		lightsHash.hemiLength = lightsStateHash.hemiLength;
 		lightsHash.shadowsLength = lightsStateHash.shadowsLength;
@@ -1586,6 +1589,7 @@ function WebGLRenderer( parameters ) {
 
 			uniforms.directionalShadowMap.value = lights.state.directionalShadowMap;
 			uniforms.directionalShadowMatrix.value = lights.state.directionalShadowMatrix;
+			uniforms.spotMap.value = lights.state.spotMap;
 			uniforms.spotShadowMap.value = lights.state.spotShadowMap;
 			uniforms.spotShadowMatrix.value = lights.state.spotShadowMatrix;
 			uniforms.pointShadowMap.value = lights.state.pointShadowMap;
@@ -1645,6 +1649,7 @@ function WebGLRenderer( parameters ) {
 				lightsHash.directionalLength !== lightsStateHash.directionalLength ||
 				lightsHash.pointLength !== lightsStateHash.pointLength ||
 				lightsHash.spotLength !== lightsStateHash.spotLength ||
+				lightsHash.spotMapLength !== lightsStateHash.spotMapLength ||
 				lightsHash.rectAreaLength !== lightsStateHash.rectAreaLength ||
 				lightsHash.hemiLength !== lightsStateHash.hemiLength ||
 				lightsHash.shadowsLength !== lightsStateHash.shadowsLength ) ) {
